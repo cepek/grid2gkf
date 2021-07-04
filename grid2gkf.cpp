@@ -11,9 +11,13 @@ Grid2gkf::Grid2gkf(std::istream& inp, std::ostream& out)
   std::string s;
   while(std::getline(inp_, s))
     {
-      // remove everything starting from hash
+      // remove everything starting from hash (input data comment)
       auto hash = s.find('#');
       if (hash != std::string::npos) s.erase(hash);
+
+      // remove everything starting from apostrophe (inline record description)
+      auto apostrophe = s.find('\'');
+      if (apostrophe != std::string::npos) s.erase(apostrophe);
 
       // check if some non-whitespace characters remained
       auto wsiter = std::find_if(s.begin(), s.end(),
