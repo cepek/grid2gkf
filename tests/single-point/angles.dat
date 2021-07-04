@@ -1,0 +1,21 @@
+# Intersection example (angles only)
+#
+# orientation of axes xy ~ East North (angles left-handed)
+
+C X   299.999 300.001
+C A     0   0  ! !
+C B   400 100  ! !
+C C   100 500  ! !
+C D   300 500  ! !
+
+# angles from X
+#
+#  71 33 53.90921526
+#  90  0  0.68754935
+#  45  0  1.03132919
+# 153 26  4.37190619
+
+A X-B-A   71-33-54
+A X-A-C   90-00-01
+A X-C-D   45-00-01
+A X-D-B  153-26-04

@@ -1,0 +1,23 @@
+# Trilateration example (distances only)
+#
+# orientation of axes xy ~ East North (angles left-handed)
+
+C X   299.999 300.001
+C A     0   0  ! !
+C B   400 100  ! !
+C C   100 500  ! !
+C D   300 500  ! !
+
+# DB X ... coded as a set
+# DN A 424.264
+# DN B 223.606
+# DN C 282.842
+# DN D 200.001
+# DE
+
+# distances to X
+#
+D A-X 424.264
+D B-X 223.606
+D C-X 282.842
+D D-X 200.001
