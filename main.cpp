@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     }
   std::ostream ostr(argc == 3 ? ofstr.rdbuf() : std::cout.rdbuf());
 
-  Snd2gkf sndfk2gkf(istr, ostr);
-  sndfk2gkf.exec();
+  Grid2gkf grid2gkf(istr, ostr);
+  grid2gkf.exec();
 
-  return 0;
+  return grid2gkf.status();
 }

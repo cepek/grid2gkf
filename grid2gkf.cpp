@@ -5,8 +5,8 @@
 #include <sstream>
 #include <algorithm>
 
-Snd2gkf::Snd2gkf(std::istream& inp, std::ostream& out)
-  : inp_(inp), out_(out)
+Grid2gkf::Grid2gkf(std::istream& inp, std::ostream& out)
+  : inp_(inp), out_(out), status_(0)
 {
   std::string s;
   while(std::getline(inp_, s))
@@ -26,7 +26,12 @@ Snd2gkf::Snd2gkf(std::istream& inp, std::ostream& out)
     }
 }
 
-void Snd2gkf::print() const
+int Grid2gkf::status() const
+{
+  return status_;
+}
+
+void Grid2gkf::print() const
 {
   out_ << "<!--\n";
 
@@ -41,7 +46,7 @@ void Snd2gkf::print() const
   out_ << "-->\n\n";
 }
 
-void Snd2gkf::gkf_begin()
+void Grid2gkf::gkf_begin()
 {
   out_ << "<?xml version=\"1.0\" ?>\n"
        << "<gama-local xmlns=\"http://www.gnu.org/software/gama/gama-local\">\n"
@@ -64,7 +69,7 @@ void Snd2gkf::gkf_begin()
        << "   azimuth-stdev=\"10\">\n\n";
 }
 
-void  Snd2gkf::gkf_end()
+void  Grid2gkf::gkf_end()
 {
   if (!cluster_.empty())
     {
@@ -79,7 +84,7 @@ void  Snd2gkf::gkf_end()
 )GKF";
 }
 
-void Snd2gkf::exec()
+void Grid2gkf::exec()
 {
   gkf_begin();
 
@@ -111,17 +116,18 @@ void Snd2gkf::exec()
   gkf_end();
 }
 
-void Snd2gkf::error(std::string err)
+void Grid2gkf::error(std::string err)
 {
   out_ << "<!-- error : " << err << " -->\n";
+  status_++;
 }
 
-std::string Snd2gkf::version() const
+std::string Grid2gkf::version() const
 {
   return "0.02";
 }
 
-void Snd2gkf::close_cluster_if_opened()
+void Grid2gkf::close_cluster_if_opened()
 {
   if (!cluster_.empty())
     {
@@ -130,13 +136,13 @@ void Snd2gkf::close_cluster_if_opened()
     }
 }
 
-std::string Snd2gkf::find_next_traverse_point()
+std::string Grid2gkf::find_next_traverse_point()
 {
    // need not to be in the next record (T)
   return "?";
 }
 
-void Snd2gkf::write_record()
+void Grid2gkf::write_record()
 {
   const auto& rec = records_[index_];
   const auto& tag = rec.tag();
@@ -157,7 +163,7 @@ void Snd2gkf::write_record()
   else if (tag == "T" ) write_record_T();
 }
 
-void Snd2gkf::write_record_C()
+void Grid2gkf::write_record_C()
 {
   auto n = words_.size();
 
@@ -181,7 +187,7 @@ void Snd2gkf::write_record_C()
   out_ << pid << xy << type << "\n";
 }
 
-void Snd2gkf::write_record_A()
+void Grid2gkf::write_record_A()
 {
   auto n = words_.size();
   if (n != 2) return;
@@ -197,7 +203,7 @@ void Snd2gkf::write_record_A()
        << "val='" << words_[1] << "' />\n";
 }
 
-void Snd2gkf::write_record_D()
+void Grid2gkf::write_record_D()
 {
   auto n = words_.size();
   if (n != 2) return;
@@ -212,7 +218,7 @@ void Snd2gkf::write_record_D()
        << "val='" << words_[1] << "' />\n";
 }
 
-void Snd2gkf::write_record_DB()
+void Grid2gkf::write_record_DB()
 {
   auto n = words_.size();
   if (n != 1) return error("wrong usage of DB");
@@ -224,19 +230,19 @@ void Snd2gkf::write_record_DB()
   out_ << "\n<obs from='" << from_ << "'>\n";
 }
 
-void Snd2gkf::write_record_DE()
+void Grid2gkf::write_record_DE()
 {
   from_.clear();
   cluster_.clear();
   out_ << "</obs>\n";
 }
 
-void Snd2gkf::write_record_DN()
+void Grid2gkf::write_record_DN()
 {
 
 }
 
-void Snd2gkf::write_record_DM()
+void Grid2gkf::write_record_DM()
 {
   auto n = words_.size();
   if (n != 2 && n != 3) return error("wrong usage of DM");
@@ -251,7 +257,7 @@ void Snd2gkf::write_record_DM()
     out_ << "<distance to='" << to << "' val='" << dist << "'/>\n";
 }
 
-void Snd2gkf::write_record_TB()
+void Grid2gkf::write_record_TB()
 {
   auto n = words_.size();
   if (n < 1) return error("wrong usage of TB");
@@ -263,12 +269,12 @@ void Snd2gkf::write_record_TB()
   out_ << "\n<obs>\n";
 }
 
-void Snd2gkf::write_record_TE()
+void Grid2gkf::write_record_TE()
 {
 
 }
 
-void Snd2gkf::write_record_T()
+void Grid2gkf::write_record_T()
 {
 
 }

@@ -6,20 +6,22 @@
 #include <vector>
 #include <unordered_map>
 
-class Snd2gkf
+class Grid2gkf
 {
 public:
-    Snd2gkf(std::istream&, std::ostream&);
+    Grid2gkf(std::istream&, std::ostream&);
 
     void exec();
     void error(std::string);
     void print() const;
 
     std::string version() const;
+    int status() const;
 
 private:
     std::istream& inp_;
     std::ostream& out_;
+    int status_;
 
     std::vector<Record> records_;
     std::vector<Record>::size_type index_;
