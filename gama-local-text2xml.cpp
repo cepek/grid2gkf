@@ -1,4 +1,4 @@
-#include "grid2gkf.h"
+#include "text2xml.h"
 #include <fstream>
 #include <iostream>
 
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     }
   std::ostream ostr(argc == 3 ? ofstr.rdbuf() : std::cout.rdbuf());
 
-  Grid2gkf grid2gkf(istr, ostr);
+  Text2xml grid2gkf(istr, ostr);
   grid2gkf.exec();
 
   return grid2gkf.status();

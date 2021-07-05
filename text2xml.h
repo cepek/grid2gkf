@@ -6,10 +6,10 @@
 #include <vector>
 #include <unordered_map>
 
-class Grid2gkf
+class Text2xml
 {
 public:
-    Grid2gkf(std::istream&, std::ostream&);
+    Text2xml(std::istream&, std::ostream&);
 
     void exec();
     void error(std::string);
