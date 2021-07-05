@@ -5,6 +5,8 @@
 #include <sstream>
 #include <algorithm>
 
+using namespace GNU_gama::local;
+
 Text2xml::Text2xml(std::istream& inp, std::ostream& out)
   : inp_(inp), out_(out), status_(0)
 {
@@ -30,11 +32,52 @@ Text2xml::Text2xml(std::istream& inp, std::ostream& out)
     }
 }
 
+void Text2xml::exec()
+{
+  gkf_begin();
+
+  cluster_.clear();
+  for (index_=0; index_<records_.size(); index_++)
+    {
+      const auto& rec = records_[index_];
+      const auto& tag = rec.tag();
+      auto iter = tagmap_.find(tag);
+      if (iter == tagmap_.end())
+        {
+          error("undefined tag " + tag);
+          continue;
+        }
+
+      std::string cluster_name = iter->second;
+
+      if (cluster_name != cluster_)
+        {
+          if (!cluster_.empty()) out_ << "</" << cluster_ << ">\n";
+
+          cluster_ = cluster_name;
+          if (!cluster_.empty()) out_ << "\n<" << cluster_ << ">\n";
+        }
+
+      write_record();
+    }
+
+  gkf_end();
+}
+
 int Text2xml::status() const
 {
   return status_;
 }
 
+std::string Text2xml::version() const
+{
+  return "0.03";
+}
+
+
+/********* private members  *********/
+
+#ifdef Text2xml_debug
 void Text2xml::print() const
 {
   out_ << "<!--\n";
@@ -48,6 +91,13 @@ void Text2xml::print() const
     }
 
   out_ << "-->\n\n";
+}
+#endif
+
+void Text2xml::error(std::string err)
+{
+  out_ << "<!-- error : " << err << " -->\n";
+  status_++;
 }
 
 void Text2xml::gkf_begin()
@@ -86,49 +136,6 @@ void  Text2xml::gkf_end()
 </network>
 </gama-local>
 )GKF";
-}
-
-void Text2xml::exec()
-{
-  gkf_begin();
-
-  cluster_.clear();
-  for (index_=0; index_<records_.size(); index_++)
-    {
-      const auto& rec = records_[index_];
-      const auto& tag = rec.tag();
-      auto iter = tagmap_.find(tag);
-      if (iter == tagmap_.end())
-        {
-          error("undefined tag " + tag);
-          continue;
-        }
-
-      std::string cluster_name = iter->second;
-
-      if (cluster_name != cluster_)
-        {
-          if (!cluster_.empty()) out_ << "</" << cluster_ << ">\n";
-
-          cluster_ = cluster_name;
-          if (!cluster_.empty()) out_ << "\n<" << cluster_ << ">\n";
-        }
-
-      write_record();
-    }
-
-  gkf_end();
-}
-
-void Text2xml::error(std::string err)
-{
-  out_ << "<!-- error : " << err << " -->\n";
-  status_++;
-}
-
-std::string Text2xml::version() const
-{
-  return "0.02";
 }
 
 void Text2xml::close_cluster_if_opened()

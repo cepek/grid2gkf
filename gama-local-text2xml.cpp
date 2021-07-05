@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-using namespace std;
+using namespace GNU_gama::local;
 
 int main(int argc, char* argv[])
 {
@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     }
   std::ostream ostr(argc == 3 ? ofstr.rdbuf() : std::cout.rdbuf());
 
-  Text2xml grid2gkf(istr, ostr);
-  grid2gkf.exec();
+  Text2xml text2gkf(istr, ostr);
+  text2gkf.exec();
 
-  return grid2gkf.status();
+  return text2gkf.status();
 }

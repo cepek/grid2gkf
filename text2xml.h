@@ -6,19 +6,29 @@
 #include <vector>
 #include <unordered_map>
 
+namespace GNU_gama { namespace local {
+
 class Text2xml
 {
 public:
     Text2xml(std::istream&, std::ostream&);
 
     void exec();
-    void error(std::string);
-    void print() const;
+    int  status() const;
 
     std::string version() const;
-    int status() const;
 
 private:
+
+#define Text2xml_debug 0
+#ifdef  Text2xml_debug
+    void print() const;
+#endif
+
+    void error(std::string);
+    void gkf_begin();
+    void gkf_end();
+
     std::istream& inp_;
     std::ostream& out_;
     int status_;
@@ -58,8 +68,7 @@ private:
       {"T",  ""}      // traverse point
     };
 
-    void gkf_begin();
-    void gkf_end();
 };
 
+}}     //namespace GNU_Gama::local
 #endif // SNDAT2GKF_H
