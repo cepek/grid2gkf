@@ -4,7 +4,10 @@
 #include "record.h"
 #include <istream>
 #include <vector>
+#include <list>
+#include <set>
 #include <unordered_map>
+#include <algorithm>
 
 namespace GNU_gama { namespace local {
 
@@ -35,9 +38,14 @@ private:
 
     std::vector<Record> records_;
     std::vector<Record>::size_type index_;
+    std::set<std::string> known_coordinates_;
+    std::set<std::string> unknown_coordinates_;
+    std::string k_(std::string id) { known_coordinates_.insert(id); return id; }
+    std::string u_(std::string id) { unknown_coordinates_.insert(id); return id; }
+
     std::string cluster_;
     std::string from_;      // observation set (DB)
-    std::string prev_;      // traverse previous point (TB)
+    std::list<std::string> traverse_points_;
     void close_cluster_if_opened();
     std::string find_next_traverse_point();
 

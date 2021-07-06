@@ -3,7 +3,6 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include <algorithm>
 
 using namespace GNU_gama::local;
 
@@ -113,9 +112,9 @@ void Text2xml::gkf_begin()
        << "   conf-pr=\"0.95\"\n"
        << "   tol-abs=\"1000\"\n"
        << "   sigma-act =\"aposteriori\"\n"
-       << "/>\n\n"
+       << "/>\n\n";
 
-       << "<points-observations\n"
+  out_ << "<points-observations\n"
        << "   distance-stdev=\"5.0\"\n"
        << "   direction-stdev=\"10.0\"\n"
        << "   angle-stdev=\"10\"\n"
@@ -130,6 +129,12 @@ void  Text2xml::gkf_end()
       out_ << "</" << cluster_ << ">\n";
       cluster_.clear();
     }
+
+  for (auto key : known_coordinates_) unknown_coordinates_.erase(key);
+  if (!unknown_coordinates_.empty()) out_ << "\n";
+  for (auto key : unknown_coordinates_)
+    out_ << "<point id=\"" << key << "\" adj=\"xy\" />\n";
+
 
   out_ << R"GKF(
 </points-observations>
@@ -178,24 +183,24 @@ void Text2xml::write_record_C()
 {
   auto n = words_.size();
 
-  std::string pid, xy, type;
+  std::string xml_point, xml_xy, xml_type;
   if (n >= 1)
     {
-      pid = "<point id='" + words_[0] + "' ";
-      type = "adj='xy' />";
+      xml_point = "<point id='" + k_(words_[0]) + "' ";
+      xml_type = "adj='xy' />";
     }
   if (n >= 3)
     {
-      xy = "x='" + words_[1] + "' y='" + words_[2] + "' ";
+      xml_xy = "x='" + words_[1] + "' y='" + words_[2] + "' ";
     }
   if (n > 4)
     {
       std::string iv = words_[3];
-      if (iv[0] == '!') type = "fix='xy' />";
-      else              type = "adj='xy' />";
+      if (iv[0] == '!') xml_type = "fix='xy' />";
+      else              xml_type = "adj='xy' />";
     }
 
-  out_ << pid << xy << type << "\n";
+  out_ << xml_point << xml_xy << xml_type << "\n";
 }
 
 void Text2xml::write_record_A()
@@ -209,8 +214,8 @@ void Text2xml::write_record_A()
   std::getline(istr, bs, '-');
   std::getline(istr, fs, '-');
 
-  out_ << "<angle from='" << from << "' "
-       << "bs='"  << bs << "' fs='" << fs << "' "
+  out_ << "<angle from='" << u_(from) << "' "
+       << "bs='"  << u_(bs) << "' fs='" << u_(fs) << "' "
        << "val='" << words_[1] << "' />\n";
 }
 
@@ -224,8 +229,8 @@ void Text2xml::write_record_D()
   std::getline(istr, from, '-');
   std::getline(istr, to, '-');
 
-  out_ << "<distance from='" << from << "' "
-       << "to='"  << to << "' "
+  out_ << "<distance from='" << u_(from) << "' "
+       << "to='"  << u_(to) << "' "
        << "val='" << words_[1] << "' />\n";
 }
 
@@ -238,7 +243,7 @@ void Text2xml::write_record_DB()
 
   const auto& rec = records_[index_];
   from_ = rec.code();
-  out_ << "\n<obs from='" << from_ << "'>\n";
+  out_ << "\n<obs from='" << u_(from_) << "'>\n";
 }
 
 void Text2xml::write_record_DE()
@@ -263,9 +268,9 @@ void Text2xml::write_record_DM()
   std::string to, dir, dist;
   istr >> to >> dir >> dist;
 
-  out_ << "<direction to='"  << to << "' val='" << dir  << "'/>\n";
+  out_ << "<direction to='"  << u_(to) << "' val='" << dir  << "'/>\n";
   if (!dir.empty())
-    out_ << "<distance to='" << to << "' val='" << dist << "'/>\n";
+    out_ << "<distance to='" << u_(to) << "' val='" << dist << "'/>\n";
 }
 
 void Text2xml::write_record_TB()
@@ -275,17 +280,46 @@ void Text2xml::write_record_TB()
 
   close_cluster_if_opened();
 
-  const auto& rec = records_[index_];
-  prev_ = rec.code();
+  traverse_points_.clear();
+
+  auto ind = index_;
+  do {
+    const auto& rec = records_[ind];
+    const auto& tag = rec.tag();
+    if (tag == "TB" || tag == "T" || tag == "TE")
+      {
+        std::istringstream istr(rec.code());
+        std::string id;
+        istr >> id;
+        traverse_points_.push_back(id);
+      }
+    if (rec.tag() == "TE") break;
+  }
+  while(++ind < records_.size());
+
   out_ << "\n<obs>\n";
 }
 
 void Text2xml::write_record_TE()
 {
-
+  cluster_.clear();
+  traverse_points_.clear();
+  out_ << "</obs>\n";
 }
 
 void Text2xml::write_record_T()
 {
+  auto n = words_.size();
+  if (n != 3) return error("wrong usage of T");
 
+  auto bs = traverse_points_.begin();
+  auto at = bs; at++;
+  auto fs = at; fs++;
+
+  out_ << "<angle bs=\"" << u_(*bs) << "\" from=\"" << u_(*at) << "\" fs=\"" << u_(*fs) << "\" "
+       << "val=\"" << words_[1] << "\" />\n";
+  out_ << "<distance from=\"" << u_(*at) << "\" to=\"" << u_(*fs) << "\" "
+       << "val=\"" << words_[2] << "\" />\n";
+
+  traverse_points_.pop_front();
 }
