@@ -6,14 +6,14 @@
 class Record
 {
 public:
-    Record(std::string line);
+  Record(std::string line);
 
-    std::string tag () const;
-    std::string code() const;
-    std::string note() const;
+  std::string tag () const;
+  std::string code() const;
+  std::string note() const;
 
 private:
-    std::string tag_, code_, note_;
+  std::string tag_, code_, note_;
 };
 
 #endif // RECORD_H

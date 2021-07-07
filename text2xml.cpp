@@ -130,17 +130,14 @@ void  Text2xml::gkf_end()
       cluster_.clear();
     }
 
-  for (auto key : known_coordinates_) unknown_coordinates_.erase(key);
+  for (auto& key : known_coordinates_) unknown_coordinates_.erase(key);
   if (!unknown_coordinates_.empty()) out_ << "\n";
-  for (auto key : unknown_coordinates_)
+  for (auto& key : unknown_coordinates_)
     out_ << "<point id=\"" << key << "\" adj=\"xy\" />\n";
 
-
-  out_ << R"GKF(
-</points-observations>
-</network>
-</gama-local>
-)GKF";
+  out_ << "\n</points-observations>\n"
+       << "</network>\n"
+       << "</gama-local>\n";
 }
 
 void Text2xml::close_cluster_if_opened()
@@ -152,10 +149,13 @@ void Text2xml::close_cluster_if_opened()
     }
 }
 
-std::string Text2xml::find_next_traverse_point()
+void Text2xml::separate_angle_ids(std::string triple,  // separated by 2 hyphens (-)
+                                  std::string& from, std::string& bs, std::string& fs)
 {
-   // need not to be in the next record (T)
-  return "?";
+  std::istringstream istr(triple);
+  std::getline(istr, from, '-');
+  std::getline(istr, bs, '-');
+  std::getline(istr, fs, '-');
 }
 
 void Text2xml::write_record()
@@ -177,6 +177,8 @@ void Text2xml::write_record()
   else if (tag == "TB") write_record_TB();
   else if (tag == "TE") write_record_TE();
   else if (tag == "T" ) write_record_T();
+  else if (tag == "M" ) write_record_M();
+  else if (tag == "B" ) write_record_B();
 }
 
 void Text2xml::write_record_C()
@@ -209,10 +211,7 @@ void Text2xml::write_record_A()
   if (n != 2) return;
 
   std::string from, bs, fs;
-  std::istringstream istr(words_[0]);
-  std::getline(istr, from, '-');
-  std::getline(istr, bs, '-');
-  std::getline(istr, fs, '-');
+  separate_angle_ids(words_[0], from, bs, fs);
 
   out_ << "<angle from='" << u_(from) << "' "
        << "bs='"  << u_(bs) << "' fs='" << u_(fs) << "' "
@@ -284,17 +283,17 @@ void Text2xml::write_record_TB()
 
   auto ind = index_;
   do {
-    const auto& rec = records_[ind];
-    const auto& tag = rec.tag();
-    if (tag == "TB" || tag == "T" || tag == "TE")
-      {
-        std::istringstream istr(rec.code());
-        std::string id;
-        istr >> id;
-        traverse_points_.push_back(id);
-      }
-    if (rec.tag() == "TE") break;
-  }
+      const auto& rec = records_[ind];
+      const auto& tag = rec.tag();
+      if (tag == "TB" || tag == "T" || tag == "TE")
+        {
+          std::istringstream istr(rec.code());
+          std::string id;
+          istr >> id;
+          traverse_points_.push_back(id);
+        }
+      if (rec.tag() == "TE") break;
+    }
   while(++ind < records_.size());
 
   out_ << "\n<obs>\n";
@@ -322,4 +321,27 @@ void Text2xml::write_record_T()
        << "val=\"" << words_[2] << "\" />\n";
 
   traverse_points_.pop_front();
+}
+
+void Text2xml::write_record_M()
+{
+  auto n = words_.size();
+  if (n != 3) return error("wrong usage of M");
+
+  std::string from, bs, fs;
+  separate_angle_ids(words_[0], from, bs, fs);
+
+  out_ << "<angle from='" << u_(from) << "' "
+       << "bs='"  << u_(bs) << "' fs='" << u_(fs) << "' "
+       << "val='" << words_[1] << "' />\n";
+  out_ << "<distance from='" << u_(from) << "' "
+       << "to='"  << u_(fs) << "' "
+       << "val='" << words_[2] << "' />\n";
+}
+
+void Text2xml::write_record_B()
+{
+  auto n = words_.size();
+  if (n < 2 || n >3) return error("wrong usage of B");
+
 }
