@@ -49,6 +49,7 @@ private:
   void close_cluster_if_opened();
   void separate_angle_ids(std::string triple,  // separated by 2 hyphens (-)
                           std::string& from, std::string& bs, std::string& fs);
+  std::string bearing2azimuth(std::string);
 
   std::vector<std::string> words_;
   void write_record();
@@ -65,6 +66,9 @@ private:
   void write_record_M ();
   void write_record_B ();
 
+  void write_record_ORDER();
+  std::string g2_axes_xy_{"ne"};
+
   const std::unordered_map<std::string, std::string> tagmap_
   {
     {"A",  "obs"},  // angle
@@ -78,7 +82,9 @@ private:
     {"TE", ""},     // traverse end
     {"T",  ""},     // traverse point
     {"M",  ""},     // 2d: angle and distance ??? obs ???
-    {"B",  "obs"}
+    {"B",  "obs"},
+
+    {".ORDER",""},  // [NE/EN] [AtFromTo/FromAtTo],
   };
 };
 

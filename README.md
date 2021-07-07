@@ -18,4 +18,6 @@ Tag C defines information about points
 C   A12  45926.42  2834.23 'iron pipe # free point A12
 ```
 
-...
+## .ORDER
+
+... EN is implicit, alternatively can be set to NE
