@@ -2,6 +2,8 @@
 #
 # orientation of axes xy ~ East North (angles left-handed)
 
+.ORDER EN
+
 C X   299.999 300.001
 C A     0   0  ! !
 C B   400 100  ! !

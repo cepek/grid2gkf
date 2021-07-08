@@ -37,6 +37,10 @@ private:
   std::ostream& out_;
   int status_;
 
+  // During the set-up global parameters are read and saved, with first command
+  // the xml header is printed and set-up phase is closed
+  bool set_up_ {true};
+
   std::vector<Record> records_;
   std::vector<Record>::size_type index_;
   std::set<std::string> known_coordinates_;
@@ -68,8 +72,18 @@ private:
   void write_record_M ();
   void write_record_B ();
 
-  void write_record_ORDER();
-  std::string g2_axes_xy_{"ne"};
+  void process_ORDER();
+  // std::string g2_axes_xy_{"ne"};
+  struct GeneralOptions
+  {
+    // Coordinate Order
+    std::string axes_xy {"ne"};   // en
+
+    // Angle Data Station Order
+    std::string angle_station_order {"at-from-to"};   // from-at-to
+
+  } general_options;
+
 
   const std::unordered_map<std::string, std::string> tagmap_
   {
@@ -86,7 +100,7 @@ private:
     {"M",  ""},     // 2d: angle and distance ??? obs ???
     {"B",  "obs"},
 
-    {".ORDER",""},  // [NE/EN] [AtFromTo/FromAtTo],
+    {".ORDER", ""}, // general options
   };
 };
 

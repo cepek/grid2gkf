@@ -1,21 +1,15 @@
-# Intersection example (distances and angles)
+# Intersection example (angles only)
 #
 # orientation of axes xy ~ East North (angles left-handed)
 
 .ORDER EN
+.ORDER From-At-To   # Angle Data Station Order
 
 C X   299.999 300.001
 C A     0   0  ! !
 C B   400 100  ! !
 C C   100 500  ! !
 C D   300 500  ! !
-
-# distances to X
-#
-D A-X 424.264
-D B-X 223.606
-D C-X 282.842
-D D-X 200.001
 
 # angles from X
 #
@@ -24,7 +18,7 @@ D D-X 200.001
 #  45  0  1.03132919
 # 153 26  4.37190619
 
-A X-B-A   71-33-54
-A X-A-C   90-00-01
-A X-C-D   45-00-01
-A X-D-B  153-26-04
+A B-X-A   71-33-54
+A A-X-C   90-00-01
+A C-X-D   45-00-01
+A D-X-B  153-26-04
