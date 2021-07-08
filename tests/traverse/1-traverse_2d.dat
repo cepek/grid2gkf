@@ -1,6 +1,6 @@
 # 2D Job with Multi-Loop Traverses
 #
-.ORDER NE
+.ORDER nE   # arguments are case insensitive
 
 C    1     5045.572   5495.338  ! !  # fixed coordinates
 C    6     5000       5190           # approximate coordinates

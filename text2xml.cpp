@@ -159,6 +159,12 @@ void Text2xml::separate_angle_ids(std::string triple,  // separated by 2 hyphens
   std::getline(istr, fs, '-');
 }
 
+std::string Text2xml::string2lower(std::string text)
+  {
+    for (auto& s : text) s = std::tolower(s);
+    return  text;
+  }
+
 std::string Text2xml::bearing2azimuth(std::string bearing)
 {
   if (bearing.empty())
@@ -174,14 +180,14 @@ std::string Text2xml::bearing2azimuth(std::string bearing)
   bearing.pop_back();
   bearing.erase(bearing.begin());
 
-  // A quadrant bearing must start with E or S and end with E or  W,
+  // A quadrant bearing must start with E or S and end with E or W,
   // otherwise the value is azitmuth (nothing to do)
   if (!((b == 'N' || b == 'S') && (e == 'E' || e == 'W'))) return bearing;
 
   /* Classical compass rose is devided into four segments, separated by
-   * directions to N, E, S and W, named NE, SE, SW and NW. In a segment
-   * the bearing is measured from direction to N or S.
-   * The quadrant bearings are always non-negative.
+   * directions to N, E, S and W. The segments are named NE, SE, SW and NW.
+   * In a segment the bearing is measured from direction to N or to S and
+   * the quadrant bearings are always positive or zero (nonnegative).
    */
 
   if (b == 'N' && e == 'E')
@@ -232,6 +238,8 @@ void Text2xml::write_record()
   else if (tag == "T" ) write_record_T();
   else if (tag == "M" ) write_record_M();
   else if (tag == "B" ) write_record_B();
+
+  else if (tag == ".ORDER") write_record_ORDER();
 }
 
 void Text2xml::write_record_C()
@@ -413,9 +421,9 @@ void Text2xml::write_record_ORDER()
   auto n = words_.size();
   if (n != 1) return error("wrong usage of .ORDER");
 
-  const auto& val = words_[1];
-  if      (val == "EN") g2_axes_xy_ = "en";
-  else if (val == "NE") g2_axes_xy_ = "ne";
+  auto val = string2lower(words_[0]);
+  if      (val == "en") g2_axes_xy_ = "en";
+  else if (val == "ne") g2_axes_xy_ = "ne";
   else {
     error("wrong usage of .ORDER");
   }

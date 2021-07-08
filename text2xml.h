@@ -8,6 +8,7 @@
 #include <set>
 #include <unordered_map>
 #include <algorithm>
+#include <cctype>
 
 namespace GNU_gama { namespace local {
 
@@ -47,6 +48,7 @@ private:
   std::string from_;      // observation set (DB)
   std::list<std::string> traverse_points_;
   void close_cluster_if_opened();
+  std::string string2lower(std::string);
   void separate_angle_ids(std::string triple,  // separated by 2 hyphens (-)
                           std::string& from, std::string& bs, std::string& fs);
   std::string bearing2azimuth(std::string);
