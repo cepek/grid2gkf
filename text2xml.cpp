@@ -34,8 +34,6 @@ Text2xml::Text2xml(std::istream& inp, std::ostream& out)
 
 void Text2xml::exec()
 {
-  // gkf_begin(); moved to write_record()
-
   cluster_.clear();
   for (index_=0; index_<records_.size(); index_++)
     {
@@ -243,6 +241,7 @@ void Text2xml::write_record()
   else if (tag == "DB") write_record_DB();
   else if (tag == "DE") write_record_DE();
   else if (tag == "DM") write_record_DM();
+  else if (tag == "DN") write_record_DN();
   else if (tag == "TB") write_record_TB();
   else if (tag == "TE") write_record_TE();
   else if (tag == "T" ) write_record_T();
@@ -326,7 +325,15 @@ void Text2xml::write_record_DE()
 
 void Text2xml::write_record_DN()
 {
+  auto n = words_.size();
+  if (n != 2 && n != 3) return error("wrong usage of DN");
 
+  const Record& rec = records_[index_];
+  std::istringstream istr(rec.code());
+  std::string to, dir;
+  istr >> to >> dir;
+
+  out_ << "<direction to='"  << u_(to) << "' val='" << dir  << "' />\n";
 }
 
 void Text2xml::write_record_DM()
