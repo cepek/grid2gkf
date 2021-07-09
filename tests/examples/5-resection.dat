@@ -1,0 +1,23 @@
+# Resection
+
+# Approximate location for the unknown station
+#
+C    P48    104500     93600
+
+# Fixed coordinates for the known stations
+#
+C    1     90132.03     88237.92   ! !
+C    2     97418.58     82279.10   ! !
+C    3     98696.21     81802.35   ! !
+C    4    102911.40     80330.69   ! !
+C    5    111203.37     95234.19   ! !
+C    6    103278.43    106872.91   ! !
+
+# Occupy “P48” and turn angles to known stations
+#
+A   P48-1-2      37-35-00.0
+A   P48-2-3       5-56-19.4
+A   P48-3-4      19-56-18.3
+A   P48-4-5     115-34-35.0
+A   P48-5-6      78-09-31.0
+A   P48-6-1     102-48-30.0

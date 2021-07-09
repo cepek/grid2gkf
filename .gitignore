@@ -3,6 +3,7 @@ build
 CMakeLists.txt.user
 *~
 .vscode/
+gama-local
 
 # Prerequisites
 *.d
