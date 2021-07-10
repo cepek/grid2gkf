@@ -18,15 +18,20 @@ Text2xml::Text2xml(std::istream& inp, std::ostream& out)
       if (hash != std::string::npos) s.erase(hash);
 
       // remove everything starting from apostrophe (inline record description)
+      std::string note;
       auto apostrophe = s.find('\'');
-      if (apostrophe != std::string::npos) s.erase(apostrophe);
+      if (apostrophe != std::string::npos)
+        {
+          note = s.substr(apostrophe);
+          s.erase(apostrophe);
+        }
 
       // check if some non-whitespace characters remained
       auto wsiter = std::find_if(s.begin(), s.end(),
                                  [](char c){return !std::iswspace(c);});
       if (wsiter != s.end())
         {
-          Record rec(s);
+          Record rec(s, note);
           records_.push_back(rec);
         }
     }
@@ -221,6 +226,8 @@ void Text2xml::write_record()
 {
   const auto& rec = records_[index_];
   const auto& tag = rec.tag();
+  const auto& note = rec.note();
+  if (!note.empty()) out_ << "<!-- " << note << " -->\n";
 
   std::istringstream istr(rec.code());
   std::string s;

@@ -2,8 +2,10 @@
 
 #include <sstream>
 
-Record::Record(std::string line)
+Record::Record(std::string line, std::string desc)
 {
+  if (desc.size() > 1) note_ = desc.substr(1);
+
   std::istringstream istr(line);
   std::string word;
   istr >> word;

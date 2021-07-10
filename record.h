@@ -6,7 +6,7 @@
 class Record
 {
 public:
-  Record(std::string line);
+  Record(std::string line, std::string desc=std::string());
 
   std::string tag () const;
   std::string code() const;
