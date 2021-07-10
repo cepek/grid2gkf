@@ -254,6 +254,7 @@ void Text2xml::write_record()
   else if (code == "T" ) write_record_T();
   else if (code == "M" ) write_record_M();
   else if (code == "B" ) write_record_B();
+  else if (code == "L" ) write_record_L();
   else {
     error("unknown command " + code);
   }
@@ -440,6 +441,22 @@ void Text2xml::write_record_B()
   out_ << "<azimuth from=\"" << from << "\" to=\"" << to << "\""
        << " val=\"" << azimuth << "\" />\n";
 }
+
+void Text2xml::write_record_L()
+{
+  auto n = words_.size();
+  if (n != 3) return error("wrong usage of L");
+
+  std::string from, to;
+  std::istringstream istr(words_[0]);
+  std::getline(istr, from, '-');
+  std::getline(istr, to,   '-');
+
+  out_ << "<dh from=\"" << from << "\" to=\"" << to << "\""
+       << " val=\""  << words_[1] << "\""
+       << " dist=\"" << words_[2] << "\" />\n";
+}
+
 
 void Text2xml::process_ORDER()
 {

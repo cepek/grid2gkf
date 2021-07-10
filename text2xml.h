@@ -71,6 +71,7 @@ private:
   void write_record_T ();
   void write_record_M ();
   void write_record_B ();
+  void write_record_L ();
 
   void process_ORDER();
   // std::string g2_axes_xy_{"ne"};
@@ -99,6 +100,7 @@ private:
     {"T",  ""},     // traverse point
     {"M",  ""},     // 2d: angle and distance ??? obs ???
     {"B",  "obs"},
+    {"L",  "height-differences"},
 
     {".ORDER", ""}, // general options
   };

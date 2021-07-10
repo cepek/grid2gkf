@@ -1,0 +1,41 @@
+# Simple Level Network with 4 Fixed Benchmarks
+
+.ORDER en
+
+# Fixed Elevations
+#E   TIDAL1  1.375  !  'NGS Ref 1
+#E   TIDAL2  2.165  !  'NGS Ref 2
+#E   BM75   23.768  !
+#E   BM26   57.129  !  'Brass Cap 1939
+
+
+# Leveling Observation Data
+L   TIDAL1-129    12.345  2.20100   # For testing purpose only, the original
+L   BM75-129     -10.023  2.25300   # US Feet was 'changed' to kilometers
+L   BM75-125      15.920  3.31200   # by adding the first digit and dot.
+L   129-130       22.130  3.37400   'Central
+L   130-125        3.833  2.28100   'At Hyde
+L   129-128       11.810  4.41700
+L   128-130       10.336  3.32100
+L   125-BM26      17.458  3.37500
+L   BM26-126       2.814  3.39200
+L   130-126       24.065  4.40900
+L   128-126       34.422  5.52200
+L   126-127      -15.485  4.48100
+L   128-127       18.95   4.45300
+L   TIDAL2-127    42.321  1.17700
+
+##  # To produce an optional plot diagram,
+##  # supply 2D coordinates at any scale.
+##
+##  .2D
+##  C   TIDAL1  11.0  12.0
+##  C   TIDAL2   0.2  11.8
+##  C   BM26     5.4   2.6
+##  C   BM75    12.2   6.4
+##  C   125      8.7   3.9
+##  C   126      3.3   4.3
+##  C   127      1.2   8.0
+##  C   128      4.0   9.6
+##  C   129      9.1   8.5
+##  C   130      6.1   6.7
