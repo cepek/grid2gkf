@@ -1,10 +1,10 @@
 # Resection
 
-.ORDER EN
+# .ORDER NE   # implicit orientatin of XY
 
 # Approximate location for the unknown station
 #
-C    P48    104500     93600
+# C P48  104500  93600   # too far from the solution, Gama rejects all obs
 
 # Fixed coordinates for the known stations
 #
