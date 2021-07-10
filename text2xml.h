@@ -85,7 +85,7 @@ private:
   } general_options;
 
 
-  const std::unordered_map<std::string, std::string> tagmap_
+  const std::unordered_map<std::string, std::string> codemap_
   {
     {"A",  "obs"},  // angle
     {"C",  ""},     // point coordinates

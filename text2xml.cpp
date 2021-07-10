@@ -43,11 +43,11 @@ void Text2xml::exec()
   for (index_=0; index_<records_.size(); index_++)
     {
       const auto& rec = records_[index_];
-      const auto& tag = rec.tag();
-      auto iter = tagmap_.find(tag);
-      if (iter == tagmap_.end())
+      const auto& code = rec.code();
+      auto iter = codemap_.find(code);
+      if (iter == codemap_.end())
         {
-          error("undefined tag " + tag);
+          error("undefined code " + code);
           continue;
         }
 
@@ -74,7 +74,7 @@ int Text2xml::status() const
 
 std::string Text2xml::version() const
 {
-  return "0.05";
+  return "0.06";
 }
 
 
@@ -87,7 +87,7 @@ void Text2xml::print() const
 
   for (int i=0; i<records_.size(); i++)
     {
-      out_ << records_[i].tag() << " " << records_[i].code();
+      out_ << records_[i].code() << " " << records_[i].data();
       auto note = records_[i].note();
       if (!note.empty()) out_ << " '" << records_[i].note();
       out_ << "\n";
@@ -225,37 +225,37 @@ std::string Text2xml::bearing2azimuth(std::string bearing)
 void Text2xml::write_record()
 {
   const auto& rec = records_[index_];
-  const auto& tag = rec.tag();
+  const auto& code = rec.code();
   const auto& note = rec.note();
   if (!note.empty()) out_ << "<!-- " << note << " -->\n";
 
-  std::istringstream istr(rec.code());
+  std::istringstream istr(rec.data());
   std::string s;
   words_.clear();
   while (istr >> s) words_.push_back(s);
 
   if (set_up_)
     {
-      if (tag == ".ORDER") return process_ORDER();
+      if (code == ".ORDER") return process_ORDER();
 
       gkf_begin();
       set_up_ = false;
     }
 
-  if      (tag == "C" ) write_record_C();
-  else if (tag == "A" ) write_record_A();
-  else if (tag == "D" ) write_record_D();
-  else if (tag == "DB") write_record_DB();
-  else if (tag == "DE") write_record_DE();
-  else if (tag == "DM") write_record_DM();
-  else if (tag == "DN") write_record_DN();
-  else if (tag == "TB") write_record_TB();
-  else if (tag == "TE") write_record_TE();
-  else if (tag == "T" ) write_record_T();
-  else if (tag == "M" ) write_record_M();
-  else if (tag == "B" ) write_record_B();
+  if      (code == "C" ) write_record_C();
+  else if (code == "A" ) write_record_A();
+  else if (code == "D" ) write_record_D();
+  else if (code == "DB") write_record_DB();
+  else if (code == "DE") write_record_DE();
+  else if (code == "DM") write_record_DM();
+  else if (code == "DN") write_record_DN();
+  else if (code == "TB") write_record_TB();
+  else if (code == "TE") write_record_TE();
+  else if (code == "T" ) write_record_T();
+  else if (code == "M" ) write_record_M();
+  else if (code == "B" ) write_record_B();
   else {
-    error("unknown command " + tag);
+    error("unknown command " + code);
   }
 }
 
@@ -319,7 +319,7 @@ void Text2xml::write_record_DB()
   close_cluster_if_opened();
 
   const auto& rec = records_[index_];
-  from_ = rec.code();
+  from_ = rec.data();
   out_ << "\n<obs from='" << u_(from_) << "'>\n";
 }
 
@@ -336,7 +336,7 @@ void Text2xml::write_record_DN()
   if (n != 2 && n != 3) return error("wrong usage of DN");
 
   const Record& rec = records_[index_];
-  std::istringstream istr(rec.code());
+  std::istringstream istr(rec.data());
   std::string to, dir;
   istr >> to >> dir;
 
@@ -349,7 +349,7 @@ void Text2xml::write_record_DM()
   if (n != 2 && n != 3) return error("wrong usage of DM");
 
   const Record& rec = records_[index_];
-  std::istringstream istr(rec.code());
+  std::istringstream istr(rec.data());
   std::string to, dir, dist;
   istr >> to >> dir >> dist;
 
@@ -370,15 +370,15 @@ void Text2xml::write_record_TB()
   auto ind = index_;
   do {
       const auto& rec = records_[ind];
-      const auto& tag = rec.tag();
-      if (tag == "TB" || tag == "T" || tag == "TE")
+      const auto& code = rec.code();
+      if (code == "TB" || code == "T" || code == "TE")
         {
-          std::istringstream istr(rec.code());
+          std::istringstream istr(rec.data());
           std::string id;
           istr >> id;
           traverse_points_.push_back(id);
         }
-      if (rec.tag() == "TE") break;
+      if (rec.code() == "TE") break;
     }
   while(++ind < records_.size());
 

@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     }
   std::ostream ostr(argc == 3 ? ofstr.rdbuf() : std::cout.rdbuf());
 
-  Text2xml text2gkf(istr, ostr);
-  text2gkf.exec();
+  Text2xml text2xml(istr, ostr);
+  text2xml.exec();
 
-  return text2gkf.status();
+  return text2xml.status();
 }

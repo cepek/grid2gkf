@@ -10,34 +10,34 @@ Record::Record(std::string line, std::string desc)
   std::string word;
   istr >> word;
   if (word.empty()) return;   // this should never happen ...
-  tag_ = word;
+  code_ = word;
 
-  istr >> code_;
-  if (code_.empty()) return;  // no code
+  istr >> data_;
+  if (data_.empty()) return;  // no code
 
   char c;
   while (istr.get(c))
     {
       if (c == '\'') break;
 
-      code_.push_back(c);
+      data_.push_back(c);
     }
 
   while (istr.get(c)) note_.push_back(c);
 
   // remove trailing spaces
-  while(!code_.empty() && std::isspace(code_.back())) code_.pop_back();
+  while(!data_.empty() && std::isspace(data_.back())) data_.pop_back();
   while(!note_.empty() && std::isspace(note_.back())) note_.pop_back();
-}
-
-std::string Record::tag() const
-{
-  return tag_;
 }
 
 std::string Record::code() const
 {
   return code_;
+}
+
+std::string Record::data() const
+{
+  return data_;
 }
 
 std::string Record::note() const
