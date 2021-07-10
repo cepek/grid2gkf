@@ -37,10 +37,6 @@ private:
   std::ostream& out_;
   int status_;
 
-  // During the set-up global parameters are read and saved, with first command
-  // the xml header is printed and set-up phase is closed
-  bool set_up_ {true};
-
   std::vector<Record> records_;
   std::vector<Record>::size_type index_;
   std::set<std::string> known_coordinates_;
@@ -100,9 +96,7 @@ private:
     {"T",  ""},     // traverse point
     {"M",  ""},     // 2d: angle and distance ??? obs ???
     {"B",  "obs"},
-    {"L",  "height-differences"},
-
-    {".ORDER", ""}, // general options
+    {"L",  "height-differences"}
   };
 };
 

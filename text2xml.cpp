@@ -40,7 +40,29 @@ Text2xml::Text2xml(std::istream& inp, std::ostream& out)
 void Text2xml::exec()
 {
   cluster_.clear();
-  for (index_=0; index_<records_.size(); index_++)
+
+  // process records that must precede calling gkf_begin();
+  std::vector<Record>::size_type start {};
+  for (start = 0; start<records_.size(); start++)
+    {
+      const auto& rec = records_[start];
+      const auto& code = rec.code();
+      if (code != ".ORDER") break; // more codes to come
+
+      const auto& note = rec.note();
+      if (!note.empty()) out_ << "<!-- " << note << " -->\n";
+
+      std::istringstream istr(rec.data());
+      std::string s;
+      words_.clear();
+      while (istr >> s) words_.push_back(s);
+
+      process_ORDER();
+    }
+
+  gkf_begin();
+
+  for (index_=start; index_<records_.size(); index_++)
     {
       const auto& rec = records_[index_];
       const auto& code = rec.code();
@@ -233,14 +255,6 @@ void Text2xml::write_record()
   std::string s;
   words_.clear();
   while (istr >> s) words_.push_back(s);
-
-  if (set_up_)
-    {
-      if (code == ".ORDER") return process_ORDER();
-
-      gkf_begin();
-      set_up_ = false;
-    }
 
   if      (code == "C" ) write_record_C();
   else if (code == "A" ) write_record_A();
