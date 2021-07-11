@@ -1,0 +1,45 @@
+
+# Frantisek Charamza: GEODET/PC, Prirucka uzivatele, Zdiby 1990
+# -------------------------------------------------------------------
+#
+# Program GETU03 pro vyrovnani mistni trigonometricke sitee
+# priklad: str. 218,  Vlozena sit ZDIBY / 15-F
+
+# sigma-apr ="5"
+# conf-pr="0.95"
+# tol-abs="1000"
+# sigma-act ="aposteriori"
+#
+# distance-stdev="10.0"
+# direction-stdev="2.0"
+
+.ORDER EN
+
+#   id         x              y
+#  1783    -453500.000    -104500.000       # adj="xy"
+C  2044    -461000.000    -101000.000  ! !  # fix="xy"
+C  2505    -451000.000    -101000.000  ! !  # fix="xy"
+#   351    -459000.000    -105000.000       # adj="xy"
+#   462    -456000.000    -101000.000       # adj="xy"
+C   776    -456000.000    -109500.000  ! !  # fix="xy"
+
+DB 1783
+DN    776    29.51661             # stdev="2.0"
+DN    351    94.22790             # stdev="2.0"
+DN    462   160.51318             # stdev="2.0"
+DN   2505   239.48577             # stdev="2.0"
+DE
+
+DB  351
+DN   2044   170.48370             # stdev= "2.0"
+DM    462   240.96667  4999.984   # stdev= "2.0" stdev="10.0"
+DM   1783   294.22817  5522.668   # stdev= "2.0" stdev="10.0"
+DN    776   362.56667             # stdev= "2.0"
+DE
+
+DB  462
+DN   2505   299.99973             # stdev= "2.0"
+DM   1783   360.51390  4301.163   # stdev= "2.0" stdev="10.0"
+DN    351    40.966290            # stdev= "2.0"
+DN   2044   100.00102             # stdev= "2.0"
+DE
