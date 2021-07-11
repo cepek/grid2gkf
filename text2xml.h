@@ -43,6 +43,11 @@ private:
   std::set<std::string> unknown_coordinates_;
   std::string k_(std::string id) { known_coordinates_.insert(id); return id; }
   std::string u_(std::string id) { unknown_coordinates_.insert(id); return id; }
+  std::set<std::string> known_z_coordinates_;
+  std::set<std::string> unknown_z_coordinates_;
+  std::string zk_(std::string id) { known_z_coordinates_.insert(id); return id; }
+  std::string zu_(std::string id) { unknown_z_coordinates_.insert(id); return id; }
+
 
   std::string cluster_;
   std::string from_;      // observation set (DB)
@@ -68,6 +73,7 @@ private:
   void write_record_M ();
   void write_record_B ();
   void write_record_L ();
+  void write_record_E ();
 
   void process_ORDER();
   // std::string g2_axes_xy_{"ne"};
@@ -96,7 +102,8 @@ private:
     {"T",  ""},     // traverse point
     {"M",  ""},     // 2d: angle and distance ??? obs ???
     {"B",  "obs"},
-    {"L",  "height-differences"}
+    {"L",  "height-differences"},
+    {"E", ""}       // levelling point
   };
 };
 

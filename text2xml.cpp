@@ -96,7 +96,7 @@ int Text2xml::status() const
 
 std::string Text2xml::version() const
 {
-  return "0.06";
+  return "0.07";
 }
 
 
@@ -160,6 +160,11 @@ void  Text2xml::gkf_end()
   if (!unknown_coordinates_.empty()) out_ << "\n";
   for (auto& key : unknown_coordinates_)
     out_ << "<point id=\"" << key << "\" adj=\"xy\" />\n";
+
+  for (auto& key : known_z_coordinates_) unknown_z_coordinates_.erase(key);
+  if (!unknown_z_coordinates_.empty()) out_ << "\n";
+  for (auto& key : unknown_z_coordinates_)
+    out_ << "<point id=\"" << key << "\" adj=\"z\" />\n";
 
   out_ << "\n</points-observations>\n"
        << "</network>\n"
@@ -269,6 +274,7 @@ void Text2xml::write_record()
   else if (code == "M" ) write_record_M();
   else if (code == "B" ) write_record_B();
   else if (code == "L" ) write_record_L();
+  else if (code == "E" ) write_record_E();
   else {
     error("unknown command " + code);
   }
@@ -466,9 +472,32 @@ void Text2xml::write_record_L()
   std::getline(istr, from, '-');
   std::getline(istr, to,   '-');
 
-  out_ << "<dh from=\"" << from << "\" to=\"" << to << "\""
+  out_ << "<dh from=\"" << zu_(from) << "\" to=\"" << zu_(to) << "\""
        << " val=\""  << words_[1] << "\""
        << " dist=\"" << words_[2] << "\" />\n";
+}
+
+void Text2xml::write_record_E()
+{
+  auto n = words_.size();
+  if (n != 3) error("");
+
+  std::string xml_point, xml_z, xml_type;
+
+  xml_point = "<point id='" + zu_(words_[0]) + "' ";
+  xml_z= "z='" + words_[1] + "' ";
+
+  std::string iv = words_[2];
+  if (iv[0] == '!') {
+      xml_type = "fix='z' />";
+      zk_(words_[0]);
+    }
+  else {
+      xml_type = "adj='z' />";
+    }
+
+
+  out_ << xml_point << xml_z << xml_type << "\n";
 }
 
 

@@ -3,10 +3,10 @@
 .ORDER en
 
 # Fixed Elevations
-#E   TIDAL1  1.375  !  'NGS Ref 1
-#E   TIDAL2  2.165  !  'NGS Ref 2
-#E   BM75   23.768  !
-#E   BM26   57.129  !  'Brass Cap 1939
+E   TIDAL1  1.375  !  'NGS Ref 1
+E   TIDAL2  2.165  !  'NGS Ref 2
+E   BM75   23.768  !
+E   BM26   57.129  !  'Brass Cap 1939
 
 
 # Leveling Observation Data

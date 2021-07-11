@@ -1,0 +1,28 @@
+# Edward M. Mikhail: Observations and Least Squares, 1976, ISBN
+# 0-7002-2481-5
+#
+# Example 7.4: Adjustment of a Level Net (p. 147)
+#
+#
+# sigma-apr="60"
+#
+
+# fixed elevation
+E   A   800.000   !
+
+# adjusted elevations
+#   B   825.220
+#   C   835.535
+#   D   809.535
+#   E   830.846
+
+
+# levelling observation data
+L  A-B   25.42  18.1   # distances in km
+L  B-C   10.34   9.4
+L  C-A  -35.20  14.2
+L  B-D  -15.54  17.6
+L  D-E   21.32  13.5
+L  E-C    4.82   9.9
+L  E-A  -31.02  13.8
+L  C-D  -26.11  14.0
