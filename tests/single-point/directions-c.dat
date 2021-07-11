@@ -37,7 +37,7 @@ DN D 135-10-02
 DM B 288-36-06 223.606   # direction and distance
 DE
 
-D  A-X  424.264  # directions cannot be used inside DB/DE
+D  A-X  424.264  # distances cannot be used inside DB/DE
 D  C-X  282.842
 D  D-X  200.001
 # D  B-X  223.606
