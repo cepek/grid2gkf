@@ -88,16 +88,37 @@ private:
   void write_record_E ();
 
   void process_ORDER();
-  // std::string g2_axes_xy_{"ne"};
   struct GeneralOptions
   {
-    // Coordinate Order
-    std::string axes_xy {"ne"};   // en
+    // Coordinate Order ["ne", "en"] is set in gama_options.
+    // Syntax .ORDER en is kept for backward compatibility.
 
     // Angle Data Station Order
     std::string angle_station_order {"at-from-to"};   // from-at-to
 
   } general_options;
+
+  void process_SET();
+  struct GamaOptions
+  {
+    // <network />
+    std::string axes_xy {"ne"};   // en
+    std::string angles  {"left-handed"};
+
+    // <parameters />
+    std::string sigma_apr {"10"};
+    std::string conf_pr   {"0.95"};
+    std::string tol_abs   {"1000"};
+    std::string sigma_act {"aposteriori"};
+
+    // <points-observations />
+    std::string distance_stdev     {"5.0"};  // "a b c": a + b*D^c, D in km
+    std::string direction_stdev    {"10.0"};
+    std::string angle_stdev        {"10.0"};
+    std::string zenith_angle_stdev {"10.0"};
+    std::string azimuth_stdev      {"10.0"};
+
+  } gama_options;
 
 
   const std::unordered_map<std::string, std::string> codemap_
