@@ -31,7 +31,19 @@ Text2xml::Text2xml(std::istream& inp, std::ostream& out)
                                  [](char c){return !std::iswspace(c);});
       if (wsiter != s.end())
         {
-          Record rec(s, note);
+          std::string r;
+          char prev = ' ';
+          for (char c : s)
+            {
+              // Separate characters '!', '*' and ';' by spaces where necessary
+              if (!std::isspace(prev) && (c=='!' || c=='*' || c==';')) {
+                  r.push_back(' ');
+                }
+              r.push_back(c);
+              prev = c;
+            }
+
+          Record rec(r, note);
           records_.push_back(rec);
         }
     }
