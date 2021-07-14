@@ -59,6 +59,8 @@ void Text2xml::exec()
 
       if      (code == ".ORDER") process_ORDER();
       else if (code == ".SET")   process_SET();
+      else if (code == ".2D")    process_NETDIM(2);
+      else if (code == ".3D")    process_NETDIM(3);
     }
 
   gkf_begin();
@@ -97,7 +99,7 @@ int Text2xml::status() const
 
 std::string Text2xml::version() const
 {
-  return "0.08";
+  return "0.09";
 }
 
 
@@ -280,6 +282,9 @@ void Text2xml::write_record()
   else if (code == "B" ) write_record_B();
   else if (code == "L" ) write_record_L();
   else if (code == "E" ) write_record_E();
+
+  else if (code == ".2D") process_NETDIM(2);
+  else if (code == ".3D") process_NETDIM(3);
   else {
     error("unknown command " + code);
   }
@@ -554,6 +559,25 @@ void Text2xml::process_SET()
   else if (atr == "azimuth-stdev")      gama_options.azimuth_stdev = val;
   else {
       return error("unknown attribute " + atr);
+    }
+}
+
+void Text2xml::process_NETDIM(int dim)
+{
+  auto n = words_.size();
+  if (n > 0) return error("No arguments are allowed in .2D / .3D");
+
+  switch (dim) {
+    case 2:
+      general_options.netdim2 = true;
+      general_options.netdim3 = false;
+      break;
+    case 3:
+      general_options.netdim2 = false;
+      general_options.netdim3 = true;
+      break;
+    default:
+      return error("bad argument in process_NETDIM call");
     }
 }
 

@@ -88,6 +88,7 @@ private:
   void write_record_E ();
 
   void process_ORDER();
+  void process_NETDIM(int);
   struct GeneralOptions
   {
     // Coordinate Order ["ne", "en"] is set in gama_options.
@@ -96,23 +97,27 @@ private:
     // Angle Data Station Order
     std::string angle_station_order {"at-from-to"};   // from-at-to
 
+    // Two/three dimensional network mode (codes .2D / .3D)
+    bool netdim2 {true};
+    bool netdim3 {false};
+
   } general_options;
 
   void process_SET();
   struct GamaOptions
   {
-    // <network />
-    std::string axes_xy {"ne"};   // en
-    std::string angles  {"left-handed"};
+    // <network />                           // ne sw es wn  for left-handed coordinate systems
+    std::string axes_xy {"ne"};              // en nw se ws  for right-handed coordinate systems
+    std::string angles  {"left-handed"};     // right-handed
 
     // <parameters />
     std::string sigma_apr {"10"};
-    std::string conf_pr   {"0.95"};
+    std::string conf_pr   {"0.95"};          // (0, 1)
     std::string tol_abs   {"1000"};
-    std::string sigma_act {"aposteriori"};
+    std::string sigma_act {"aposteriori"};   // apriori
 
     // <points-observations />
-    std::string distance_stdev     {"5.0"};  // "a b c": a + b*D^c, D in km
+    std::string distance_stdev     {"5.0"};  // "a b c" --> a + b*D^c, D in km
     std::string direction_stdev    {"10.0"};
     std::string angle_stdev        {"10.0"};
     std::string zenith_angle_stdev {"10.0"};
@@ -136,7 +141,12 @@ private:
     {"M",  ""},     // 2d: angle and distance ??? obs ???
     {"B",  "obs"},
     {"L",  "height-differences"},
-    {"E", ""}       // levelling point
+    {"E", ""},      // levelling point
+
+    /* general options */
+
+    {".2D", ""},    // network dimension can be switched anywhere inside input data
+    {".3D", ""}
   };
 
 };
