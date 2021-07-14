@@ -522,7 +522,39 @@ void Text2xml::process_ORDER()
 
 void Text2xml::process_SET()
 {
+  auto n = words_.size();
+  if (n < 2) return error("not enough parameters of .SET");
 
+  std::string atr = words_[0];   // attribute
+  std::string val = words_[1];   // value
+  for (size_t i=2; i<words_.size(); i++) val += " " + words_[i];
+
+  atr = string2lower(atr);
+  val = string2lower(val);
+
+  if (atr == "distance-stdev") {
+      if (n > 4)
+        return error("too many values for " + atr + " : " + val);
+    }
+  else  {
+      if (n > 2)
+        return error("too many values for " + atr + " : " + val);
+    }
+
+  if      (atr == "axes-xy")            gama_options.axes_xy = val;
+  else if (atr == "angles")             gama_options.angles = val;
+  else if (atr == "sigma-apr")          gama_options.sigma_apr =val;
+  else if (atr == "conf-pr")            gama_options.conf_pr = val;
+  else if (atr == "tol-abs")            gama_options.tol_abs = val;
+  else if (atr == "sigma-act")          gama_options.sigma_act = val;
+  else if (atr == "distance-stdev")     gama_options.distance_stdev = val;
+  else if (atr == "direction-stdev")    gama_options.direction_stdev = val;
+  else if (atr == "angle-stdev")        gama_options.angle_stdev = val;
+  else if (atr == "zenith-angle-stdev") gama_options.zenith_angle_stdev = val;
+  else if (atr == "azimuth-stdev")      gama_options.azimuth_stdev = val;
+  else {
+      return error("unknown attribute " + atr);
+    }
 }
 
 /*************************************************************************/

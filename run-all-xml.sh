@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUILD=../build-text2xml-Imported_Kit_ce422a-Debug
+BUILD=../`ls .. | grep build-text2xml`
 GAMA=../gama/bin/gama-local
 
 GKF=`find ${BUILD}/tests -name *.gkf`
