@@ -9,7 +9,6 @@ namespace GNU_gama {
 
     Text2xmlRecord::Text2xmlRecord(std::string line)
     {
-      std::cerr << "    " << line << "\n";
       // remove everything starting from hash (input data comment)
       auto hash = line.find('#');
       if (hash != std::string::npos) line.erase(hash);
@@ -34,12 +33,12 @@ namespace GNU_gama {
       for (auto& c : word) c = std::toupper(c);
       code_ = word;
 
+      // Separate characters '!', '*' and ';' by spaces where necessary
       std::string temp;
       std::getline(istr, temp);
       char previous = ' ';
       for (char c : temp)
         {
-          // Separate characters '!', '*' and ';' by spaces where necessary
           if (!std::isspace(previous) && (c=='!' || c=='*' || c==';')) {
               data_.push_back(' ');
             }
