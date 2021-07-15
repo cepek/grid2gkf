@@ -15,8 +15,7 @@ namespace GNU_gama {
 
       // remove everything starting from apostrophe (inline record description)
       auto apostrophe = line.find('\'');
-      if (apostrophe != std::string::npos)
-        {
+      if (apostrophe != std::string::npos) {
           note_ = line.substr(apostrophe+1);
           line.erase(apostrophe);
         }
@@ -37,8 +36,7 @@ namespace GNU_gama {
       std::string temp;
       std::getline(istr, temp);
       char previous = ' ';
-      for (char c : temp)
-        {
+      for (char c : temp) {
           if (!std::isspace(previous) && (c=='!' || c=='*' || c==';')) {
               data_.push_back(' ');
             }
@@ -57,16 +55,17 @@ namespace GNU_gama {
       };
       trim(data_);
       trim(note_);
+
+      // tokens ...
+      std::istringstream istrtok(data_);
+      while (istrtok >> temp) {
+          tokens_.push_back(temp);
+        }
     }
 
     std::string Text2xmlRecord::code() const
     {
       return code_;
-    }
-
-    std::string Text2xmlRecord::data() const
-    {
-      return data_;
     }
 
     std::string Text2xmlRecord::note() const
@@ -77,6 +76,16 @@ namespace GNU_gama {
     bool Text2xmlRecord::empty() const
     {
       return code_.empty();
+    }
+
+    std::string::size_type Text2xmlRecord::size() const
+    {
+      return tokens_.size();
+    }
+
+    const std::vector<std::string>& Text2xmlRecord::tokens() const
+    {
+      return tokens_;
     }
 
   } // namespace local

@@ -26,11 +26,6 @@ public:
 private:
   using Record = Text2xmlRecord;
 
-#define Text2xml_debug 0
-#ifdef  Text2xml_debug
-  void print() const;
-#endif
-
   void error(std::string);
   void gkf_begin();
   void gkf_end();
@@ -60,7 +55,7 @@ private:
                           std::string& from, std::string& bs, std::string& fs);
   std::string bearing2azimuth(std::string);
 
-  std::vector<std::string> words_;
+  std::vector<std::string> tokens_;
   void write_record();
   void write_record_C();
   void write_record_A();

@@ -25,8 +25,7 @@ void Text2xml::exec()
 
   // process records that must precede calling gkf_begin();
   std::vector<Record>::size_type start {};
-  for (start = 0; start<records_.size(); start++)
-    {
+  for (start = 0; start<records_.size(); start++) {
       const auto& rec = records_[start];
       const auto& code = rec.code();
       if (code[0] != '.') break;
@@ -34,10 +33,7 @@ void Text2xml::exec()
       const auto& note = rec.note();
       if (!note.empty()) out_ << "<!-- " << note << " -->\n";
 
-      std::istringstream istr(rec.data());
-      std::string s;
-      words_.clear();
-      while (istr >> s) words_.push_back(s);
+      tokens_ = rec.tokens();
 
       if      (code == ".ORDER") process_ORDER();
       else if (code == ".SET")   process_SET();
@@ -81,28 +77,11 @@ int Text2xml::status() const
 
 std::string Text2xml::version() const
 {
-  return "0.09";
+  return "0.10";
 }
 
 
 /********* private members  *********/
-
-#ifdef Text2xml_debug
-void Text2xml::print() const
-{
-  out_ << "<!--\n";
-
-  for (int i=0; i<records_.size(); i++)
-    {
-      out_ << records_[i].code() << " " << records_[i].data();
-      auto note = records_[i].note();
-      if (!note.empty()) out_ << " '" << records_[i].note();
-      out_ << "\n";
-    }
-
-  out_ << "-->\n\n";
-}
-#endif
 
 void Text2xml::error(std::string err)
 {
@@ -245,10 +224,7 @@ void Text2xml::write_record()
   const auto& note = rec.note();
   if (!note.empty()) out_ << "<!-- " << note << " -->\n";
 
-  std::istringstream istr(rec.data());
-  std::string s;
-  words_.clear();
-  while (istr >> s) words_.push_back(s);
+  tokens_ = rec.tokens();
 
   if      (code == "C" ) write_record_C();
   else if (code == "A" ) write_record_A();
@@ -274,21 +250,21 @@ void Text2xml::write_record()
 
 void Text2xml::write_record_C()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
 
   std::string xml_point, xml_xy, xml_type;
   if (n >= 1)
     {
-      xml_point = "<point id='" + k_(words_[0]) + "' ";
+      xml_point = "<point id='" + k_(tokens_[0]) + "' ";
       xml_type = "adj='xy' />";
     }
   if (n >= 3)
     {
-      xml_xy = "x='" + words_[1] + "' y='" + words_[2] + "' ";
+      xml_xy = "x='" + tokens_[1] + "' y='" + tokens_[2] + "' ";
     }
   if (n > 4)
     {
-      std::string iv = words_[3];
+      std::string iv = tokens_[3];
       if (iv[0] == '!') xml_type = "fix='xy' />";
       else              xml_type = "adj='xy' />";
     }
@@ -298,41 +274,41 @@ void Text2xml::write_record_C()
 
 void Text2xml::write_record_A()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 2) return;
 
   std::string from, bs, fs;
-  separate_angle_ids(words_[0], from, bs, fs);
+  separate_angle_ids(tokens_[0], from, bs, fs);
 
   out_ << "<angle from='" << u_(from) << "' "
        << "bs='"  << u_(bs) << "' fs='" << u_(fs) << "' "
-       << "val='" << words_[1] << "' />\n";
+       << "val='" << tokens_[1] << "' />\n";
 }
 
 void Text2xml::write_record_D()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 2) return;
 
   std::string from, to;
-  std::istringstream istr(words_[0]);
+  std::istringstream istr(tokens_[0]);
   std::getline(istr, from, '-');
   std::getline(istr, to, '-');
 
   out_ << "<distance from='" << u_(from) << "' "
        << "to='"  << u_(to) << "' "
-       << "val='" << words_[1] << "' />\n";
+       << "val='" << tokens_[1] << "' />\n";
 }
 
 void Text2xml::write_record_DB()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 1) return error("wrong usage of DB");
 
   close_cluster_if_opened();
 
   const auto& rec = records_[index_];
-  from_ = rec.data();
+  from_ = rec.tokens()[0];
   out_ << "\n<obs from='" << u_(from_) << "'>\n";
 }
 
@@ -345,26 +321,26 @@ void Text2xml::write_record_DE()
 
 void Text2xml::write_record_DN()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 2 && n != 3) return error("wrong usage of DN");
 
   const Record& rec = records_[index_];
-  std::istringstream istr(rec.data());
-  std::string to, dir;
-  istr >> to >> dir;
+  // std::istringstream istr(rec.data());
+  auto tok = rec.tokens();
+  const std::string& to = tok[0], dir = tok[1];
+  // istr >> to >> dir;
 
   out_ << "<direction to='"  << u_(to) << "' val='" << dir  << "' />\n";
 }
 
 void Text2xml::write_record_DM()
 {
-  auto n = words_.size();
+  const Record& rec = records_[index_];
+  auto n = rec.size();
   if (n != 2 && n != 3) return error("wrong usage of DM");
 
-  const Record& rec = records_[index_];
-  std::istringstream istr(rec.data());
-  std::string to, dir, dist;
-  istr >> to >> dir >> dist;
+  auto tokens = rec.tokens();
+  const std::string& to=tokens[0], dir=tokens[1], dist=tokens[2];
 
   out_ << "<direction to='"  << u_(to) << "' val='" << dir  << "'/>\n";
   if (!dir.empty())
@@ -373,7 +349,7 @@ void Text2xml::write_record_DM()
 
 void Text2xml::write_record_TB()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n < 1) return error("wrong usage of TB");
 
   close_cluster_if_opened();
@@ -384,12 +360,8 @@ void Text2xml::write_record_TB()
   do {
       const auto& rec = records_[ind];
       const auto& code = rec.code();
-      if (code == "TB" || code == "T" || code == "TE")
-        {
-          std::istringstream istr(rec.data());
-          std::string id;
-          istr >> id;
-          traverse_points_.push_back(id);
+      if (code == "TB" || code == "T" || code == "TE") {
+          traverse_points_.push_back(rec.tokens()[0]);
         }
       if (rec.code() == "TE") break;
     }
@@ -407,7 +379,7 @@ void Text2xml::write_record_TE()
 
 void Text2xml::write_record_T()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 3) return error("wrong usage of T");
 
   auto bs = traverse_points_.begin();
@@ -415,40 +387,40 @@ void Text2xml::write_record_T()
   auto fs = at; fs++;
 
   out_ << "<angle bs=\"" << u_(*bs) << "\" from=\"" << u_(*at) << "\" fs=\"" << u_(*fs) << "\" "
-       << "val=\"" << words_[1] << "\" />\n";
+       << "val=\"" << tokens_[1] << "\" />\n";
   out_ << "<distance from=\"" << u_(*at) << "\" to=\"" << u_(*fs) << "\" "
-       << "val=\"" << words_[2] << "\" />\n";
+       << "val=\"" << tokens_[2] << "\" />\n";
 
   traverse_points_.pop_front();
 }
 
 void Text2xml::write_record_M()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 3) return error("wrong usage of M");
 
   std::string from, bs, fs;
-  separate_angle_ids(words_[0], from, bs, fs);
+  separate_angle_ids(tokens_[0], from, bs, fs);
 
   out_ << "<angle from='" << u_(from) << "' "
        << "bs='"  << u_(bs) << "' fs='" << u_(fs) << "' "
-       << "val='" << words_[1] << "' />\n";
+       << "val='" << tokens_[1] << "' />\n";
   out_ << "<distance from='" << u_(from) << "' "
        << "to='"  << u_(fs) << "' "
-       << "val='" << words_[2] << "' />\n";
+       << "val='" << tokens_[2] << "' />\n";
 }
 
 void Text2xml::write_record_B()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n < 2 || n >3) return error("wrong usage of B");
 
   std::string from, to;
-  std::istringstream istr(words_[0]);
+  std::istringstream istr(tokens_[0]);
   std::getline(istr, from, '-');
   std::getline(istr, to,   '-');
 
-  std::string azimuth = bearing2azimuth(words_[1]);
+  std::string azimuth = bearing2azimuth(tokens_[1]);
 
   out_ << "<azimuth from=\"" << from << "\" to=\"" << to << "\""
        << " val=\"" << azimuth << "\" />\n";
@@ -456,33 +428,33 @@ void Text2xml::write_record_B()
 
 void Text2xml::write_record_L()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 3) return error("wrong usage of L");
 
   std::string from, to;
-  std::istringstream istr(words_[0]);
+  std::istringstream istr(tokens_[0]);
   std::getline(istr, from, '-');
   std::getline(istr, to,   '-');
 
   out_ << "<dh from=\"" << zu_(from) << "\" to=\"" << zu_(to) << "\""
-       << " val=\""  << words_[1] << "\""
-       << " dist=\"" << words_[2] << "\" />\n";
+       << " val=\""  << tokens_[1] << "\""
+       << " dist=\"" << tokens_[2] << "\" />\n";
 }
 
 void Text2xml::write_record_E()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 3) error("");
 
   std::string xml_point, xml_z, xml_type;
 
-  xml_point = "<point id='" + zu_(words_[0]) + "' ";
-  xml_z= "z='" + words_[1] + "' ";
+  xml_point = "<point id='" + zu_(tokens_[0]) + "' ";
+  xml_z= "z='" + tokens_[1] + "' ";
 
-  std::string iv = words_[2];
+  std::string iv = tokens_[2];
   if (iv[0] == '!') {
       xml_type = "fix='z' />";
-      zk_(words_[0]);
+      zk_(tokens_[0]);
     }
   else {
       xml_type = "adj='z' />";
@@ -493,10 +465,10 @@ void Text2xml::write_record_E()
 
 void Text2xml::process_ORDER()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n != 1) return error("wrong usage of .ORDER");
 
-  auto val = string2lower(words_[0]);
+  auto val = string2lower(tokens_[0]);
   if      (val == "en") gama_options.axes_xy = val;
   else if (val == "ne") gama_options.axes_xy = val;
 
@@ -509,12 +481,12 @@ void Text2xml::process_ORDER()
 
 void Text2xml::process_SET()
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n < 2) return error("not enough parameters of .SET");
 
-  std::string atr = words_[0];   // attribute
-  std::string val = words_[1];   // value
-  for (size_t i=2; i<words_.size(); i++) val += " " + words_[i];
+  std::string atr = tokens_[0];   // attribute
+  std::string val = tokens_[1];   // value
+  for (size_t i=2; i<tokens_.size(); i++) val += " " + tokens_[i];
 
   atr = string2lower(atr);
   val = string2lower(val);
@@ -546,7 +518,7 @@ void Text2xml::process_SET()
 
 void Text2xml::process_NETDIM(int dim)
 {
-  auto n = words_.size();
+  auto n = tokens_.size();
   if (n > 0) return error("No arguments are allowed in .2D / .3D");
 
   switch (dim) {
