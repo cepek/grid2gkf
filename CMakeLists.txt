@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(gama-local-text2xml
     gama-local-text2xml.cpp
-    text2xml.h text2xml.cpp)
+    text2xml.h text2xml.cpp
+    text2xml_record.h text2xml_record.cpp
+    )
 
 
 enable_testing()

@@ -1,6 +1,8 @@
 #ifndef SNDAT2GKF_H
 #define SNDAT2GKF_H
 
+#include "text2xml_record.h"
+
 #include <istream>
 #include <vector>
 #include <list>
@@ -13,6 +15,8 @@ namespace GNU_gama { namespace local {
 
 class Text2xml
 {
+  using Record = Text2xmlRecord;
+
 public:
   Text2xml(std::istream&, std::ostream&);
 
@@ -22,19 +26,6 @@ public:
   std::string version() const;
 
 private:
-
-  /**/ class Record
-  /**/ {
-  /**/ public:
-  /**/   Record(std::string line, std::string desc=std::string());
-  /**/
-  /**/   std::string code() const;
-  /**/   std::string data() const;
-  /**/   std::string note() const;
-  /**/
-  /**/ private:
-  /**/   std::string code_, data_, note_;
-  /**/ };
 
 #define Text2xml_debug 0
 #ifdef  Text2xml_debug

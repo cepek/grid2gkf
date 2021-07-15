@@ -6,6 +6,7 @@
 #include <cstdlib>
 
 using namespace GNU_gama::local;
+using Record = Text2xmlRecord;
 
 Text2xml::Text2xml(std::istream& inp, std::ostream& out)
   : inp_(inp), out_(out), status_(0)
@@ -595,46 +596,4 @@ void Text2xml::process_NETDIM(int dim)
 
 /*************************************************************************/
 
-Text2xml::Record::Record(std::string line, std::string desc)
-{
-  if (desc.size() > 1) note_ = desc.substr(1);
 
-  std::istringstream istr(line);
-  std::string word;
-  istr >> word;
-  if (word.empty()) return;   // this should never happen ...
-  for (auto& c : word) c = std::toupper(c);
-  code_ = word;
-
-  istr >> data_;
-  if (data_.empty()) return;  // no code
-
-  char c;
-  while (istr.get(c))
-    {
-      if (c == '\'') break;
-
-      data_.push_back(c);
-    }
-
-  while (istr.get(c)) note_.push_back(c);
-
-  // remove trailing spaces
-  while(!data_.empty() && std::isspace(data_.back())) data_.pop_back();
-  while(!note_.empty() && std::isspace(note_.back())) note_.pop_back();
-}
-
-std::string Text2xml::Record::code() const
-{
-  return code_;
-}
-
-std::string Text2xml::Record::data() const
-{
-  return data_;
-}
-
-std::string Text2xml::Record::note() const
-{
-  return note_;
-}
