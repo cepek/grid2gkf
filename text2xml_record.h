@@ -9,11 +9,13 @@ namespace GNU_gama {
     class Text2xmlRecord
     {
     public:
-      Text2xmlRecord(std::string line, std::string desc=std::string());
+      Text2xmlRecord(std::string line);
 
       std::string code() const;
       std::string data() const;
       std::string note() const;
+
+      bool empty() const;
 
     private:
       std::string code_, data_, note_;

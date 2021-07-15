@@ -15,8 +15,6 @@ namespace GNU_gama { namespace local {
 
 class Text2xml
 {
-  using Record = Text2xmlRecord;
-
 public:
   Text2xml(std::istream&, std::ostream&);
 
@@ -26,6 +24,7 @@ public:
   std::string version() const;
 
 private:
+  using Record = Text2xmlRecord;
 
 #define Text2xml_debug 0
 #ifdef  Text2xml_debug

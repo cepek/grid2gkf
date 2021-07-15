@@ -1,13 +1,31 @@
 #include "text2xml_record.h"
 
+#include <algorithm>
 #include <sstream>
+#include <iostream>
 
 namespace GNU_gama {
   namespace local {
 
-    Text2xmlRecord::Text2xmlRecord(std::string line, std::string desc)
+    Text2xmlRecord::Text2xmlRecord(std::string line)
     {
-      if (desc.size() > 1) note_ = desc.substr(1);
+      std::cerr << "    " << line << "\n";
+      // remove everything starting from hash (input data comment)
+      auto hash = line.find('#');
+      if (hash != std::string::npos) line.erase(hash);
+
+      // remove everything starting from apostrophe (inline record description)
+      auto apostrophe = line.find('\'');
+      if (apostrophe != std::string::npos)
+        {
+          note_ = line.substr(apostrophe+1);
+          line.erase(apostrophe);
+        }
+
+      // check if some non-whitespace characters remained
+      auto wsiter = std::find_if(line.begin(), line.end(),
+                                 [](char c){return !std::iswspace(c);});
+      if (wsiter == line.end()) return;
 
       std::istringstream istr(line);
       std::string word;
@@ -16,22 +34,30 @@ namespace GNU_gama {
       for (auto& c : word) c = std::toupper(c);
       code_ = word;
 
-      istr >> data_;
-      if (data_.empty()) return;  // no code
-
-      char c;
-      while (istr.get(c))
+      std::string temp;
+      std::getline(istr, temp);
+      char previous = ' ';
+      for (char c : temp)
         {
-          if (c == '\'') break;
-
+          // Separate characters '!', '*' and ';' by spaces where necessary
+          if (!std::isspace(previous) && (c=='!' || c=='*' || c==';')) {
+              data_.push_back(' ');
+            }
           data_.push_back(c);
+          previous = c;
         }
 
-      while (istr.get(c)) note_.push_back(c);
-
-      // remove trailing spaces
-      while(!data_.empty() && std::isspace(data_.back())) data_.pop_back();
-      while(!note_.empty() && std::isspace(note_.back())) note_.pop_back();
+      // trim leading and trailing spaces
+      const std::string WHITESPACE = " \n\r\t\f\v";
+      auto trim = [&WHITESPACE](std::string& s)
+      {
+        auto ind = s.find_first_not_of(WHITESPACE);
+        if (ind != std::string::npos) s = s.substr(ind);
+        ind = s.find_last_not_of(WHITESPACE);
+        if (ind != std::string::npos) s = s.substr(0,ind+1);
+      };
+      trim(data_);
+      trim(note_);
     }
 
     std::string Text2xmlRecord::code() const
@@ -47,6 +73,11 @@ namespace GNU_gama {
     std::string Text2xmlRecord::note() const
     {
       return note_;
+    }
+
+    bool Text2xmlRecord::empty() const
+    {
+      return code_.empty();
     }
 
   } // namespace local
