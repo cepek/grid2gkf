@@ -82,9 +82,8 @@ private:
     // Angle Data Station Order
     std::string angle_station_order {"at-from-to"};   // from-at-to
 
-    // Two/three dimensional network mode (codes .2D / .3D)
-    bool netdim2 {true};
-    bool netdim3 {false};
+    // 0 undefined, 1 levelling, 2 xy, 3 xyz
+    unsigned netdim {0};
 
   } general_options;
 

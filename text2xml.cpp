@@ -522,13 +522,14 @@ void Text2xml::process_NETDIM(int dim)
   if (n > 0) return error("No arguments are allowed in .2D / .3D");
 
   switch (dim) {
+    case 1:
+      general_options.netdim = 1;
+      break;
     case 2:
-      general_options.netdim2 = true;
-      general_options.netdim3 = false;
+      general_options.netdim = 2;
       break;
     case 3:
-      general_options.netdim2 = false;
-      general_options.netdim3 = true;
+      general_options.netdim = 3;
       break;
     default:
       return error("bad argument in process_NETDIM call");
